@@ -8,8 +8,9 @@ void main() {
       test('FloatingPdfViewerOptions default values', () {
         const options = FloatingPdfViewerOptions();
 
-        expect(options.initialLeft, 50.0);
-        expect(options.initialTop, 100.0);
+        // null: FloatingPdfViewerManager centers the viewer.
+        expect(options.initialLeft, null);
+        expect(options.initialTop, null);
         expect(options.initialWidth, 360.0);
         expect(options.initialHeight, 500.0);
         expect(options.title, null);
@@ -39,7 +40,7 @@ void main() {
         // Preserved values
         expect(updatedOptions.initialWidth, 400.0);
         expect(updatedOptions.headerColor, Colors.blue);
-        expect(updatedOptions.initialLeft, 50.0); // default value
+        expect(updatedOptions.initialLeft, null); // default value
       });
 
       test('FloatingPdfViewerOptions equality and hashCode', () {
@@ -151,8 +152,8 @@ void main() {
 
       expect(widget.pdfUrl, testPdfUrl);
       expect(widget.options.title, null);
-      expect(widget.options.initialLeft, 50.0); // default value
-      expect(widget.options.initialTop, 100.0); // default value
+      expect(widget.options.initialLeft, null); // default value
+      expect(widget.options.initialTop, null); // default value
       expect(widget.options.initialWidth, 360.0); // default value
       expect(widget.options.initialHeight, 500.0); // default value
       expect(widget.options.headerColor, null);

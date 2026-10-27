@@ -120,7 +120,8 @@ void main() {
       test('should handle clearing non-existent cache gracefully', () async {
         // Act & Assert - should not throw
         await PdfDownloader.clearCacheForUrl(
-            'https://example.com/nonexistent.pdf');
+          'https://example.com/nonexistent.pdf',
+        );
       });
     });
 

@@ -39,7 +39,7 @@ void main() {
 
       // Act
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Assert
       expect(manager.isVisible, isTrue);
@@ -68,11 +68,11 @@ void main() {
       );
 
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Act
       manager.hide();
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Assert
       expect(manager.isVisible, isFalse);
@@ -107,7 +107,7 @@ void main() {
 
       // Act
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Assert
       expect(manager.isVisible, isTrue);
@@ -139,13 +139,13 @@ void main() {
       );
 
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Act - Find and tap close button
       final closeButton = find.byIcon(Icons.close);
       if (closeButton.evaluate().isNotEmpty) {
         await tester.tap(closeButton);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
 
       // Assert
@@ -185,7 +185,7 @@ void main() {
 
       // Act
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Assert
       expect(manager.isVisible, isTrue);
@@ -218,7 +218,7 @@ void main() {
 
       // Act
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Assert
       expect(manager.isVisible, isTrue);
@@ -247,11 +247,11 @@ void main() {
       );
 
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Act
       manager.dispose();
-      await tester.pumpAndSettle();
+      await tester.pump();
 
       // Assert
       expect(manager.isVisible, isFalse);
@@ -286,20 +286,20 @@ void main() {
 
       // Act & Assert - First cycle
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(manager.isVisible, isTrue);
 
       manager.hide();
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(manager.isVisible, isFalse);
 
       // Second cycle
       await tester.tap(find.text('Show PDF'));
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(manager.isVisible, isTrue);
 
       manager.hide();
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(manager.isVisible, isFalse);
     });
   });

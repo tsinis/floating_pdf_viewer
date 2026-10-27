@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:pdfx/pdfx.dart';
@@ -40,7 +39,6 @@ class _FloatingPdfViewerState extends State<FloatingPdfViewer> {
 
   // PDF controller
   PdfControllerPinch? _pdfController;
-  File? _pdfFile;
 
   late final ValueNotifier<double> _leftNotifier;
   late final ValueNotifier<double> _topNotifier;
@@ -88,30 +86,39 @@ class _FloatingPdfViewerState extends State<FloatingPdfViewer> {
       _isCachedNotifier.value = isCached;
 
       // Get PDF file (from cache or download)
-      _pdfFile = await PdfDownloader.getPdfFileWithCache(
-        widget.pdfUrl,
-        (progress) {
-          if (mounted) {
-            _downloadProgressNotifier.value = progress;
-          }
-        },
-      );
+      final pdfFile = await PdfDownloader.getPdfFileWithCache(widget.pdfUrl, (
+        progress,
+      ) {
+        if (mounted) {
+          _downloadProgressNotifier.value = progress;
+        }
+      });
 
       // Update cache status after download
       if (!isCached && mounted) {
         _isCachedNotifier.value = true;
       }
 
-      // Create PDF controller from file
-      _pdfController = PdfControllerPinch(
-        document: PdfDocument.openFile(_pdfFile!.path),
-      );
-
-      if (mounted) {
-        _isLoadingNotifier.value = false;
-        _retryCount = 0; // Reset retry count on success
+      // Open the document here, not inside the controller: a file pdfx cannot
+      // open must reach the retry and error handling below. Passed in
+      // un-awaited, its error had no listener and escaped as an unhandled
+      // Zone error (INSPECTOR-APP-4RG).
+      final document = await PdfDocument.openFile(pdfFile.path);
+      if (!mounted) {
+        await document.close();
+        return;
       }
+
+      setState(() {
+        _pdfController = PdfControllerPinch(document: Future.value(document));
+      });
+      _isLoadingNotifier.value = false;
+      _retryCount = 0; // Reset retry count on success
     } catch (e) {
+      if (!mounted) return;
+
+      // Do not open the same broken file from the cache again.
+      await _removeFromCache();
       if (!mounted) return;
 
       // Retry logic
@@ -134,10 +141,27 @@ class _FloatingPdfViewerState extends State<FloatingPdfViewer> {
     }
   }
 
+  Future<void> _removeFromCache() async {
+    try {
+      await PdfDownloader.clearCacheForUrl(widget.pdfUrl);
+      if (mounted) {
+        _isCachedNotifier.value = false;
+      }
+    } catch (_) {
+      // Nothing cached, or the cache is not reachable: the retry downloads.
+    }
+  }
+
   Future<void> _reloadPdf() async {
-    _pdfController?.dispose();
-    _pdfController = null;
-    _pdfFile = null;
+    final previousController = _pdfController;
+    // Unmount the viewer first: it still uses the old controller until the
+    // next frame, so dispose that controller only after the frame.
+    setState(() => _pdfController = null);
+    if (previousController != null) {
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => previousController.dispose(),
+      );
+    }
     _retryCount = 0; // Reset retry count on manual reload
     await _loadPdf();
   }
@@ -179,7 +203,6 @@ class _FloatingPdfViewerState extends State<FloatingPdfViewer> {
   @override
   void dispose() {
     _pdfController?.dispose();
-    _pdfFile = null;
     _leftNotifier.dispose();
     _topNotifier.dispose();
     _widthNotifier.dispose();

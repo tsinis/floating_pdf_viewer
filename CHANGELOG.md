@@ -1,3 +1,11 @@
+## 0.1.8
+
+* **Fix**: A PDF that `pdfx` cannot open now goes through the retry logic and the "Failed to load PDF" view. Before, `PdfDocument.openFile` was passed un-awaited to the controller, so its error escaped as an unhandled Zone error.
+* **Fix**: A cached file that cannot be opened is removed from the cache, so the retry downloads it again instead of opening the same broken file.
+* **Fix**: "Try Again" / Reload now shows the new document. `PdfViewPinch` attaches its controller only once, so the viewer is now keyed by its controller, and the old controller is disposed only after the viewer that used it is gone.
+* **Tests**: Added widget tests for the open-failure and reload paths. Updated the option tests to the `null` (centered) default position, and replaced `pumpAndSettle` in the manager tests, which could not settle while the loading indicator animates.
+* **Dependencies**: `pdfx` ^2.11.0, `http` ^1.6.0, `path_provider` ^2.1.6, `crypto` ^3.0.8, `flutter_lints` ^6.0.0 (Dart ^3.8.0, so the code is formatted in the current style), `mocktail` ^1.0.5, `path_provider_platform_interface` ^2.1.3.
+
 ## 0.1.7
 
 * **New Feature**: Disk-based PDF caching system

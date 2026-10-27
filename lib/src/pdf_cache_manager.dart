@@ -143,10 +143,7 @@ class CacheStats {
   final int fileCount;
   final int totalSizeBytes;
 
-  CacheStats({
-    required this.fileCount,
-    required this.totalSizeBytes,
-  });
+  CacheStats({required this.fileCount, required this.totalSizeBytes});
 
   /// Get size in MB
   double get totalSizeMB => totalSizeBytes / (1024 * 1024);

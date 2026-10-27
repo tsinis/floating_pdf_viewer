@@ -63,8 +63,10 @@ void main() {
     group('savePdfToCache', () {
       test('should save PDF bytes to cache', () async {
         // Act
-        final file =
-            await PdfCacheManager.savePdfToCache(testUrl1, testPdfBytes1);
+        final file = await PdfCacheManager.savePdfToCache(
+          testUrl1,
+          testPdfBytes1,
+        );
 
         // Assert
         expect(await file.exists(), isTrue);
@@ -74,10 +76,14 @@ void main() {
 
       test('should generate unique cache keys for different URLs', () async {
         // Act
-        final file1 =
-            await PdfCacheManager.savePdfToCache(testUrl1, testPdfBytes1);
-        final file2 =
-            await PdfCacheManager.savePdfToCache(testUrl2, testPdfBytes2);
+        final file1 = await PdfCacheManager.savePdfToCache(
+          testUrl1,
+          testPdfBytes1,
+        );
+        final file2 = await PdfCacheManager.savePdfToCache(
+          testUrl2,
+          testPdfBytes2,
+        );
 
         // Assert
         expect(file1.path, isNot(equals(file2.path)));
@@ -90,8 +96,10 @@ void main() {
         await PdfCacheManager.savePdfToCache(testUrl1, testPdfBytes1);
 
         // Act - save different content with same URL
-        final file =
-            await PdfCacheManager.savePdfToCache(testUrl1, testPdfBytes2);
+        final file = await PdfCacheManager.savePdfToCache(
+          testUrl1,
+          testPdfBytes2,
+        );
 
         // Assert
         expect(await file.exists(), isTrue);
@@ -191,7 +199,8 @@ void main() {
       test('should handle removing non-existent cache gracefully', () async {
         // Act & Assert - should not throw
         await PdfCacheManager.removeCachedPdf(
-            'https://example.com/nonexistent.pdf');
+          'https://example.com/nonexistent.pdf',
+        );
       });
     });
 
@@ -309,13 +318,17 @@ void main() {
 
         // Assert
         expect(stats.fileCount, equals(2));
-        expect(stats.totalSizeBytes,
-            equals(testPdfBytes1.length + testPdfBytes2.length));
         expect(
-            stats.totalSizeMB,
-            closeTo(
-                (testPdfBytes1.length + testPdfBytes2.length) / (1024 * 1024),
-                0.01));
+          stats.totalSizeBytes,
+          equals(testPdfBytes1.length + testPdfBytes2.length),
+        );
+        expect(
+          stats.totalSizeMB,
+          closeTo(
+            (testPdfBytes1.length + testPdfBytes2.length) / (1024 * 1024),
+            0.01,
+          ),
+        );
       });
 
       test('should have working toString method', () async {
@@ -336,11 +349,15 @@ void main() {
     group('cache key generation', () {
       test('should generate consistent keys for same URL', () async {
         // Arrange & Act
-        final file1 =
-            await PdfCacheManager.savePdfToCache(testUrl1, testPdfBytes1);
+        final file1 = await PdfCacheManager.savePdfToCache(
+          testUrl1,
+          testPdfBytes1,
+        );
         await PdfCacheManager.removeCachedPdf(testUrl1);
-        final file2 =
-            await PdfCacheManager.savePdfToCache(testUrl1, testPdfBytes1);
+        final file2 = await PdfCacheManager.savePdfToCache(
+          testUrl1,
+          testPdfBytes1,
+        );
 
         // Assert
         expect(file1.path, equals(file2.path));
@@ -351,8 +368,10 @@ void main() {
         const urlWithParams = 'https://example.com/test.pdf?param=value&id=123';
 
         // Act
-        final file =
-            await PdfCacheManager.savePdfToCache(urlWithParams, testPdfBytes1);
+        final file = await PdfCacheManager.savePdfToCache(
+          urlWithParams,
+          testPdfBytes1,
+        );
 
         // Assert
         expect(await file.exists(), isTrue);
@@ -364,8 +383,10 @@ void main() {
         const specialUrl = 'https://example.com/test file (1).pdf';
 
         // Act
-        final file =
-            await PdfCacheManager.savePdfToCache(specialUrl, testPdfBytes1);
+        final file = await PdfCacheManager.savePdfToCache(
+          specialUrl,
+          testPdfBytes1,
+        );
 
         // Assert
         expect(await file.exists(), isTrue);

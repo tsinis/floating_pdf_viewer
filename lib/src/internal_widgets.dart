@@ -357,6 +357,8 @@ class PdfContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = pdfController;
+
     return Expanded(
       child: ClipRRect(
         borderRadius: const BorderRadius.only(
@@ -366,12 +368,15 @@ class PdfContent extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            if (pdfController != null)
+            if (controller != null)
               RepaintBoundary(
                 child: DecoratedBox(
                   decoration: BoxDecoration(color: Color(0xff2f343e)),
                   child: PdfViewPinch(
-                    controller: pdfController!,
+                    // PdfViewPinch attaches its controller only once, in
+                    // initState: a new controller needs a new State.
+                    key: ObjectKey(controller),
+                    controller: controller,
                     padding: 0,
                     builders: PdfViewPinchBuilders<DefaultBuilderOptions>(
                       pageLoaderBuilder: (context) {
